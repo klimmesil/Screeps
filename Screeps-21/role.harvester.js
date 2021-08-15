@@ -1,7 +1,3 @@
-// functions
-var funcControl = require("func.control");
-var funcCreeps = require("func.creeps");
-
 // main role
 var roleHarvester = {
 
