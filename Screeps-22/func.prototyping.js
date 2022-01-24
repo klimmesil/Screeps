@@ -12,42 +12,37 @@ const debugs = {
     buidler: 1,
     hauler: 1,
     miner: 1,
-    upgrader:1
+    upgrader: 1
 }
 
 const funcCreeps = require("func.creeps");
 
 /**
- * prototypes things
+ * Prototypes creeps
  */
-const funcPrototyping = {
+const creeps = function () {
     /**
-     * Prototypes creeps
+     * runs creep function
+     * @param {number|null} debug
      */
-    creeps: function () {
-        /**
-         * runs creep function
-         * @param {number|null} debug
-         */
-        Creep.prototype.run = function (debug = null) {
-            const role = this.memory.role;
+    Creep.prototype.run = function (debug = null) {
+        const role = this.memory.role;
 
-            // jobless
-            if (!debugs[role] || !roles[role]) return null;
+        // jobless
+        if (!debugs[role] || !roles[role]) return null;
 
-            // job exists
-            if (debug === null) debug = debugs[role];
+        // job exists
+        if (debug === null) debug = debugs[role];
+        
+        roles[role].run(this, debug);
+    };
 
-            roles[role].run(this, debug);
-        }
-
-        /**
-         * creep will go to flag
-         */
-        Creep.prototype.sleep = function () {
-            funcCreeps.sleep(this);
-        }
-    }
+    /**
+     * creep will go to flag
+     */
+    Creep.prototype.sleep = function () {
+        funcCreeps.sleep(this);
+    };
 };
 
-module.exports = funcPrototyping;
+module.exports = { creeps };
