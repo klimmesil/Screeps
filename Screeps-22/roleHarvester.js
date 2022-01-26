@@ -1,5 +1,5 @@
 // imports
-const funcCreeps = require(`func.creeps`);
+const funcCreeps = require(`funcCreeps`);
 
 module.exports = {
     /**

@@ -1,5 +1,4 @@
 // imports
-const manageMemory = require(`manage.memory`);
 
 // classes
 class Model {
@@ -146,8 +145,8 @@ const spawnLaunch = function (strategy) {
             _.set(Memory, `rooms.all.crew.count.${role}`, val);
 
             // specific room
-            val = _.get(Memory, `rooms.${tempRoom}.count.${role}`) + 1;
-            _.set(Memory, `rooms.${tempRoom}.count.${role}`, val);
+            val = _.get(Memory, `rooms.${tempRoom}.crew.count.${role}`) + 1;
+            _.set(Memory, `rooms.${tempRoom}.crew.count.${role}`, val);
         }
 
         return true;
@@ -176,8 +175,8 @@ const spawnLaunch = function (strategy) {
         _.set(Memory, `rooms.all.crew.count.${role}`, val);
 
         // specific room
-        val = _.get(Memory, `rooms.${tempRoom}.count.${role}`) + 1;
-        _.set(Memory, `rooms.${tempRoom}.count.${role}`, val);
+        val = _.get(Memory, `rooms.${tempRoom}.crew.count.${role}`) + 1;
+        _.set(Memory, `rooms.${tempRoom}.crew.count.${role}`, val);
     }
 
     return true;
@@ -206,8 +205,6 @@ const spawnNumber = function (strategy) {
         const name = role + Game.time
         const opt = { memory: { role: role } }
 
-        console.log(body);
-
         const spawned = Game.spawns[tempSpawn].spawnCreep(body, name, opt);
 
         // announce a spawn
@@ -222,8 +219,8 @@ const spawnNumber = function (strategy) {
             _.set(Memory, `rooms.all.crew.count.${role}`, val);
 
             // specific room
-            val = _.get(Memory, `rooms.${tempRoom}.count.${role}`) + 1;
-            _.set(Memory, `rooms.${tempRoom}.count.${role}`, val);
+            val = _.get(Memory, `rooms.${tempRoom}.crew.count.${role}`) + 1;
+            _.set(Memory, `rooms.${tempRoom}.crew.count.${role}`, val);
         }
 
         return true;

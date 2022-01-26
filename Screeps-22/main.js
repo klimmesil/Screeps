@@ -1,47 +1,76 @@
 // imports
-const funcPrototyping = require(`func.prototyping`);
-const manageMemory = require(`manage.memory`);
-const manageCrew = require(`manage.crew`);
+try {
+    const logger = require("logger");
+    const testing = require("test");
+    const manageCrew = require(`manageCrew`);
 
-// prototyping
-funcPrototyping.creeps();
 
-// console ease
-global.R = manageMemory.hardReset;
+    // prototyping
+    require("propsCreeps");
+    require("propsGlobal"); // includes console ease
 
-console.log("________Global reset___________________________");
+    logger.log("________Global reset___________________________", { color: "green", size: "20px" });
 
-module.exports.loop = function () {
+    module.exports.loop = function () {
 
-    try {
-        console.log(`________${Game.time}____________________________________`);
+        try {
+            logger.log(`________${Game.time}____________________________________`, { color: "green" });
 
-        // creeping (lol)
-        for (let name in Game.creeps) {
+            // hard reset
             try {
-                const creep = Game.creeps[name];
-                creep.run();
+                if (!_.get(Memory, `HardReset`)) global.R();
             }
             catch (error) {
-                console.log("creep " + name + " had an error");
-                console.log("<span style='color: #f37d00'>" + error.stack);
-            }
-        }
+                logger.error("memory", error);
 
-        // spawning
-        for (let name in Game.spawns) {
+            }
+
+            // creeping (lol)
+            for (let name in Game.creeps) {
+                try {
+                    const creep = Game.creeps[name];
+                    creep.run();
+                }
+                catch (error) {
+                    logger.error(name, error, Game.creeps[name].memory.role);
+                }
+            }
+
+            // spawning
+            for (let name in Game.spawns) {
+                try {
+                    if (_.get(Memory, `spawns.${name}.spawnStun`) == 0) manageCrew.spawning();
+                    else _.set(Memory, `spawns.${name}.spawnStun`, _.get(Memory, `spawns.${name}.spawnStun`) - 1);
+                }
+                catch (error) {
+                    logger.error(name, error, Game.spawns.spawn.room.name);
+                }
+            }
+
+            // test zone
             try {
-                if (_.get(Memory, `spawns.${name}.spawnStun`) == 0) console.log(manageCrew.spawning());
-                else _.set(Memory, `spawns.${name}.spawnStun`, _.get(Memory, `spawns.${name}.spawnStun`) - 1);
+                testing.test();
             }
             catch (error) {
-                console.log("spawner " + name + " had an error");
-                console.log("<span style='color: #f37d00'>" + error.stack);
+                logger.warning("testing", error);
             }
         }
+        catch (error) {
+            console.log("problem");
+            logger.error("main", error, "FATAL");
+        }
+
+        if (!(Game.time % 30)) global.clear();
+        logger.backup();
+        logger.display();
+        logger.flush();
     }
-    catch (error) {
-        console.log("main had an error");
-        console.log("<span style='color: #f37d00'>" + error.stack);
-    }
+} catch (error) {
+    const logger = require("logger");
+
+    logger.error("FATAL", error, "FATAL");
+    logger.display();
+    logger.flush();
+    if (error.stack === undefined) throw error;
 }
+
