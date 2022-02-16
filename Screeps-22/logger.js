@@ -40,7 +40,7 @@ const getErrorInfo = function (error) {
 
     // line
     const endLine = throwLine.substring(length - 8, length);
-    const start = endLine.indexOf(":")+1;
+    const start = endLine.indexOf(":") + 1;
     const stop = start + endLine.substring(start, 12).indexOf(":");
     const line = endLine.substring(start, stop);
 
@@ -97,8 +97,17 @@ const flush = function () {
  * @param {String} summary 
  * @param {Error} error but it's really a warning
  */
-const warning = function (summary = "Warning", error = { message: "", stack: "" }, category = "orther") {
+const warning = function (summary = "Warning", error = {}, category = "other") {
     // #f37d00
+
+    // not really an error
+    if (!error.stack) {
+        if (!_.get(global, `warnings.${category}`))
+            _.set(global, `warnings.${category}`, []);
+
+        global.warnings[category].push(summary);
+    }
+
     // look for error info
     const info = getErrorInfo(error);
     const line = trimToSize(info.line, 4);
@@ -109,10 +118,10 @@ const warning = function (summary = "Warning", error = { message: "", stack: "" 
     const sum = `${trimSum} | ${message} | line: ${line} | src: ${info.source}`;
 
     // make detail box
-    const text = html.getDetails(sum, error.stack, { color: "#f37d00" });
+    const text = html.getDetails(sum, error.stack);
 
     if (!_.get(global, `warnings.${category}`))
-        global.warnings[category] = [];
+        _.set(global, `warnings.${category}`, []);
 
     global.warnings[category].push(text);
 };
@@ -137,7 +146,7 @@ const error = function (summary = "Error", error, category = "other") {
     const text = html.getDetails(`${trimToSize(summary, 15)} | ${trimToSize(error.message, 40)} | info: `, error.stack, { color: "#ff9999" });
 
     if (!_.get(global, `errors.${category}`))
-        global.errors[category] = [];
+        _.set(global, `errors.${category}`, []);
 
     global.errors[category].push(text)
 };
@@ -161,7 +170,7 @@ const log = function (content, stl = {}) {
  * @param {Object} stl style
  * @returns string
  */
- const unpackList = function (list, stl = undefined) {
+const unpackList = function (list, stl = undefined) {
     if (stl == undefined) {
         stl = {
             position: "relative",
